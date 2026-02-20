@@ -1002,3 +1002,31 @@ function updateClock() {
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+
+// ─────────────────────────────────────────────
+// ESP32 Camera Stream
+// ─────────────────────────────────────────────
+function startCameraStream() {
+  const camIP = "192.168.1.22"; // Update this with ESP32 IP from Serial Monitor
+  const streamUrl = "http://" + camIP + ":81/stream";
+  const camImg = document.getElementById("cameraStream");
+  const camStatus = document.getElementById("camStatus");
+  const offlineMsg = document.getElementById("camOfflineMsg");
+
+  camImg.src = streamUrl;
+
+  camImg.onload = function() {
+    camStatus.innerText = "🟢 Camera Live";
+    if (offlineMsg) offlineMsg.style.display = "none";
+  };
+
+  camImg.onerror = function() {
+    camStatus.innerText = "🔴 Camera Offline";
+    if (offlineMsg) offlineMsg.style.display = "block";
+    // Retry every 5 seconds
+    setTimeout(startCameraStream, 5000);
+  };
+}
+
+startCameraStream();
